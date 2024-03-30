@@ -75,7 +75,7 @@ function createGallery(arr) {
     return images.map(({ preview, original, description }) => `
     <li class="item">
     <a class="link" href="${original}">
-    <img class="img" src="${preview}" alt="${description}">
+    <img class="img" src="${preview}" data-source="${original}" alt="${description}">
     </a>
     </li>
     `)
@@ -84,5 +84,51 @@ function createGallery(arr) {
 
 gallery.insertAdjacentHTML(`beforeend`, createGallery(images));
 
+/////////////////////////////////////////////////////////////
+
+function galleryClick(event) {
+    event.preventDefault();
+
+    if (event.target.nodeName !== 'IMG') {
+    return;
+    }
+
+
+    const currentImage = event.target;
+    console.log(currentImage);
+    const imageSource = currentImage.dataset.source;
+    console.log(imageSource);
+    const imageAlt = currentImage.alt;
+    console.log(imageAlt);
+
+
+    const instance = basicLightbox.create(
+    `
+    	<img src="${imageSource}" alt="${imageAlt}" width="1112" height="640">
+    `,
+    {
+      onShow: instance => {
+        document.addEventListener('keydown', escKeyPressHandler);
+        },
+        
+
+      onClose: instance => {
+        document.removeEventListener('keydown', escKeyPressHandler);
+        },
+      
+      
+    }
+  );
+    instance.show();
+    
+     function escKeyPressHandler(event) {
+    if (event.code === 'Escape') {
+      instance.close();
+    }
+  }
+}
+
+
+gallery.addEventListener("click", galleryClick)
 
 
